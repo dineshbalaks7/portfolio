@@ -1498,6 +1498,36 @@
     visibility: hidden !important;
     pointer-events: none !important;
   }
+
+  /* Responsive Ambient Glows for Mobile */
+  .ambient {
+    opacity: 0.22;
+    filter: blur(60px);
+  }
+  .ambient-hero {
+    width: 320px;
+    height: 320px;
+    top: 20px;
+    right: -40px;
+  }
+  .ambient-crimson {
+    width: 280px;
+    height: 280px;
+    top: 800px;
+    left: -60px;
+  }
+  .ambient-projects {
+    width: 300px;
+    height: 300px;
+    top: 1800px;
+    right: -50px;
+  }
+  .ambient-contact {
+    width: 320px;
+    height: 320px;
+    bottom: 150px;
+    left: 5%;
+  }
 }
 
 /* Guard against touch devices and coarse pointers */
