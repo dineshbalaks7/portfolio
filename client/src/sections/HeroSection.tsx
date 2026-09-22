@@ -10,8 +10,7 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
   const handleResumeDownload = () => {
-    // Check if resume.pdf exists or inform recruiter
-    toast.info("Resume document ready — download placeholder configured at /resume.pdf");
+    toast.success("Downloading Dinesh Bala KS's Resume...");
   };
 
   return (
@@ -56,13 +55,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
               <ArrowDownRight size={16} />
             </button>
 
-            <button
+            <a
+              href="/resume.pdf"
+              download="Dinesh_Bala_KS_Resume.pdf"
               className="button button-secondary"
               onClick={handleResumeDownload}
             >
               <FileDown size={16} className="text-[#E50914]" />
               Download Resume
-            </button>
+            </a>
           </div>
 
           {/* Secondary Link */}

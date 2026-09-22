@@ -1,5 +1,5 @@
 import React from "react";
-import { Linkedin, Github, ArrowUp } from "lucide-react";
+import { Linkedin, Github, ArrowUp, FileDown } from "lucide-react";
 
 interface FooterProps {
   onNavigate: (sectionId: string) => void;
@@ -42,6 +42,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <a href="#projects" onClick={(e) => handleLinkClick(e, "projects")}>Projects</a>
             <a href="#certifications" onClick={(e) => handleLinkClick(e, "certifications")}>Certifications</a>
             <a href="#contact" onClick={(e) => handleLinkClick(e, "contact")}>Contact</a>
+            <a
+              href="/resume.pdf"
+              download="Dinesh_Bala_KS_Resume.pdf"
+              className="flex items-center gap-1.5 text-[#A1A1A1] hover:text-white transition-colors"
+            >
+              <FileDown size={13} className="text-[#E50914]" />
+              <span>Resume</span>
+            </a>
             <a
               href={gitHubUrl}
               target="_blank"

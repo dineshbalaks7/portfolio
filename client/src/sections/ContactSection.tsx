@@ -1,6 +1,8 @@
 import React, { useState, FormEvent } from "react";
-import { Send, Linkedin, Github, Mail, Check, Copy, ArrowUpRight } from "lucide-react";
+import { Send, Linkedin, Github, Mail, Check, Copy, ArrowUpRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+
+const WEB3FORMS_ACCESS_KEY = "eba0bcdd-6e19-4e88-88d2-6b9e796aeb84";
 
 export const ContactSection: React.FC = () => {
   const [copied, setCopied] = useState(false);
@@ -26,15 +28,44 @@ export const ContactSection: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormStatus("sending");
-    setTimeout(() => {
-      setFormStatus("sent");
-      toast.success("Thank you! Your message has been captured.");
-      setFormData({ name: "", email: "", subject: "", message: "" });
-      setTimeout(() => setFormStatus("idle"), 4000);
-    }, 700);
+
+    try {
+      const formPayload = new FormData();
+      formPayload.append("access_key", WEB3FORMS_ACCESS_KEY);
+      formPayload.append("name", formData.name);
+      formPayload.append("email", formData.email);
+      formPayload.append("subject", formData.subject || `Portfolio Message from ${formData.name}`);
+      formPayload.append("message", formData.message);
+      formPayload.append("from_name", `${formData.name} (via Portfolio)`);
+
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formPayload,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setFormStatus("sent");
+        toast.success("Message sent! Dinesh will receive it in his Gmail inbox.");
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        setTimeout(() => setFormStatus("idle"), 5000);
+      } else {
+        throw new Error(result.message || "Submission failed");
+      }
+    } catch (error) {
+      console.error("Submission failed, falling back to mail client:", error);
+      const subject = encodeURIComponent(formData.subject || `Portfolio Message from ${formData.name}`);
+      const body = encodeURIComponent(
+        `Hi Dinesh,\n\n${formData.message}\n\n---\nSender Name: ${formData.name}\nSender Email: ${formData.email}`
+      );
+      window.location.href = `mailto:dineshbalaks@gmail.com?subject=${subject}&body=${body}`;
+      toast.info("Opened your email client to send message.");
+      setFormStatus("idle");
+    }
   };
 
   return (
@@ -132,6 +163,8 @@ export const ContactSection: React.FC = () => {
                 <label htmlFor="form-name">Name</label>
                 <input
                   id="form-name"
+                  name="name"
+                  autoComplete="name"
                   type="text"
                   required
                   placeholder="Your Name"
@@ -145,6 +178,8 @@ export const ContactSection: React.FC = () => {
                 <label htmlFor="form-email">Email</label>
                 <input
                   id="form-email"
+                  name="email"
+                  autoComplete="email"
                   type="email"
                   required
                   placeholder="name@company.com"
@@ -159,6 +194,7 @@ export const ContactSection: React.FC = () => {
               <label htmlFor="form-subject">Subject</label>
               <input
                 id="form-subject"
+                name="subject"
                 type="text"
                 required
                 placeholder="Internship / Project Opportunity / Inquiries"
@@ -172,6 +208,7 @@ export const ContactSection: React.FC = () => {
               <label htmlFor="form-message">Message</label>
               <textarea
                 id="form-message"
+                name="message"
                 required
                 rows={5}
                 placeholder="Tell me about the role, project, or collaboration..."
@@ -181,25 +218,34 @@ export const ContactSection: React.FC = () => {
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={formStatus === "sending" || formStatus === "sent"}
-              className="button button-primary self-start"
-            >
-              {formStatus === "sending" ? (
-                "Sending Message..."
-              ) : formStatus === "sent" ? (
-                <>
-                  <Check size={16} />
-                  Message Sent
-                </>
-              ) : (
-                <>
-                  Send Message
-                  <Send size={16} />
-                </>
-              )}
-            </button>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <button
+                type="submit"
+                disabled={formStatus === "sending" || formStatus === "sent"}
+                className="button button-primary self-start"
+              >
+                {formStatus === "sending" ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Sending Message...
+                  </>
+                ) : formStatus === "sent" ? (
+                  <>
+                    <Check size={16} />
+                    Message Sent!
+                  </>
+                ) : (
+                  <>
+                    Send Message
+                    <Send size={16} />
+                  </>
+                )}
+              </button>
+
+              <span className="text-xs text-neutral-400">
+                Delivers directly to <strong className="text-neutral-200">dineshbalaks@gmail.com</strong>
+              </span>
+            </div>
           </form>
         </div>
       </div>
